@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+#  app:
+#    container_name: ksync-be-app
+#    build: .
+#    ports:
+#      - "3000:3000"
+#    environment:
+#      - MONGO_URI=mongodb://mongo:27017/main_db
+#    depends_on:
+#      - mongo
+#    volumes:
+#      - .:/usr/src/app
+#      - /usr/src/app/node_modules
+
+  mongo:
+    container_name: my-mongo
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb-data:/data/db
+
+volumes:
+  mongodb-data:

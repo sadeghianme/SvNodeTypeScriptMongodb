@@ -5,6 +5,7 @@ import { UserModule } from './user/user.module';
 import { errorHandler } from './middleware/errorHandler.middleware';
 import {swaggerSpec} from "./swaggerDef";
 import * as swaggerUi from 'swagger-ui-express';
+import {expressjwt} from 'express-jwt';
 
 // Initialize modules
 const authModule = new AuthModule();
@@ -15,8 +16,21 @@ const app: Application = express();
 // Middlewares
 app.use(express.json());
 
+if (!process.env.JWT_SECRET) {
+    throw new Error("JWT_SECRET is not set. Please set it in the .env file.");
+}
+
+app.use(expressjwt({
+    secret: process.env.JWT_SECRET!,
+    algorithms: ['HS256'] })
+    .unless({      // No JWT required for these routes
+        path: [
+            '/auth/login',
+            '/auth/register'
+        ]
+    }));
+
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-// console.log("22222", JSON.stringify(swaggerSpec, null, 2));
 
 // Routes
 app.use('/auth', authModule.router);
@@ -30,5 +44,4 @@ app.get('/', (req: Request, res: Response) => {
     res.send('Welcome to Express & TypeScript Server');
 });
 
-// Export the app
 export default app;

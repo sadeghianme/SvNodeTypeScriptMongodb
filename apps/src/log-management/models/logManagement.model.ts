@@ -1,7 +1,6 @@
 import mongoose, { Document } from 'mongoose';
 import { CreateLogManagementDto } from '../dto/logManagement.dto';
 
-// Extending CreateUserDto with Document for Mongoose
 interface LogManagementDocument extends CreateLogManagementDto, Document {}
 
 const logManagementSchema = new mongoose.Schema<LogManagementDocument>({

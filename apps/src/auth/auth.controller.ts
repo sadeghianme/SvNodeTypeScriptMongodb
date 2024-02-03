@@ -1,17 +1,42 @@
-// src/auth/auth.controller.ts
-
-import { Request, Response } from 'express';
+import {NextFunction, Request, Response} from 'express';
 import { AuthService } from './auth.service';
+import {UserService} from "../user/user.service";
 
 export class AuthController {
-    private authService: AuthService;
+    private userService = new UserService();
 
-    constructor(authService: AuthService) {
-        this.authService = authService;
-    }
+    constructor(
+        private authService: AuthService
+    ) {}
 
-    // Handler to respond to a request to get a user by ID
-    getToken = async (req: Request, res: Response) => {
+    login = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { email, password } = req.body;
+            const token = await this.authService.validateUser(email, password);
+
+            if (token) {
+                res.status(200).send({ token });
+            } else {
+                res.status(401).send({ message: 'Invalid credentials' });
+            }
+        } catch (error: any) {
+            next(error);
+        }
+    };
+
+
+    register = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            console.log("register", req.body)
+            const newUser = await this.userService.createUser(req.body);
+            const token = await this.authService.createToken(newUser.id);
+            res.status(201).json({ newUser });
+        } catch (error: any) {
+            next(error);
+        }
+    };
+
+    getToken = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const token = await this.authService.getToken();
             if (!token) {
@@ -20,9 +45,23 @@ export class AuthController {
             }
             res.status(200).send(token);
         } catch (error: any) {
-            res.status(500).send({ message: error.message });
+            next(error);
         }
     };
 
-    // Add other handlers as needed for your application...
+    getTokenInfo = async (req: Request | any, res: Response, next: NextFunction) => {
+        try {
+            const userPayload = req.auth;
+            if (!userPayload) {
+                return res.status(401).send('Unauthorized');
+            }
+            throw Error("hiiiiiiii")
+            const userId = userPayload.sub;
+            const userDetails = await this.authService.getTokenInfo(userId);
+            res.json(userDetails);
+        } catch (error) {
+            next(error);
+        }
+    };
+
 }

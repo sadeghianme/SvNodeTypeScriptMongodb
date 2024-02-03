@@ -2,25 +2,52 @@
 
 import {CreateUserDto} from "./dto/user.dto";
 import User from "./models/user.model";
+import UserModel, {UserDocument} from "./models/user.model";
+import * as bcrypt from 'bcrypt';
+import {CommonService} from "../services/common.service";
 
 export class UserService {
-    // Example of a service method to get a user by ID
-    async getUserById(userId: string) {
-        // Here you would interact with your database to retrieve the user
-        // For example, using a User model (if using an ORM like TypeORM or Sequelize)
-        // const user = await UserModel.findById(userId);
-        // return user;
-        return 'get user'
+    private readonly saltRounds = 10;
+    private commonService = new CommonService()
+    constructor() {}
+
+    async findUserByEmail(email: string): Promise<UserDocument | null> {
+        return User.findOne({ email });
     }
 
-    async createUser(createUserDto: CreateUserDto) {
-        if (createUserDto.email ==="aaa@a.com") {
-            throw new Error('Email validation error message');
+    async getUserById(userId: string): Promise<UserDocument | null> {
+        return UserModel.findById(userId);
+    }
+
+    async comparePassword(candidatePassword: string, userPassword: string): Promise<boolean> {
+        return bcrypt.compare(candidatePassword, userPassword);
+    }
+
+    async createUser(createUserDto: CreateUserDto): Promise<UserDocument> {
+        // Validate the Email
+        if (!this.commonService.validateEmail(createUserDto.email)) {
+            throw new Error('Email is not valid');
         }
-        const user = new User(createUserDto);
+
+        // Validate the password strength
+        if (!this.commonService.validateStrongPassword(createUserDto.password)) {
+            throw new Error('Password does not meet the strength requirements.');
+        }
+
+        // Generate a salt and hash the password
+        const salt = await bcrypt.genSalt(this.saltRounds);
+        const hashedPassword = await bcrypt.hash(createUserDto.password, salt);
+
+        // Replace the plain password with the hashed password
+        const user = new User({
+            ...createUserDto,
+            password: hashedPassword,
+        });
+
         await user.save();
         return user;
     }
+
 
     // Example of a service method to update a user by ID
     async updateUser(userId: string, userData: any) {
@@ -31,5 +58,5 @@ export class UserService {
         return 'update user'
     }
 
-    // Add other methods as needed for your application...
 }
+

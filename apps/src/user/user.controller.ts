@@ -1,17 +1,11 @@
-// src/user/user.controller.ts
 
 import {NextFunction, Request, Response} from 'express';
 import { UserService } from './user.service';
 
 export class UserController {
-    private userService: UserService;
+    constructor(private userService: UserService) {}
 
-    constructor(userService: UserService) {
-        this.userService = userService;
-    }
-
-    // Handler to respond to a request to get a user by ID
-    getUserById = async (req: Request, res: Response) => {
+    getUserById = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const userId = req.params.id;
             const user = await this.userService.getUserById(userId);
@@ -21,33 +15,31 @@ export class UserController {
             }
             res.status(200).send(user);
         } catch (error: any) {
-            res.status(500).send({ message: error.message });
+            next(error);
         }
     };
 
     createUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        console.log("create user")
+        console.log("Create User API")
         try {
             const createdUser = await this.userService.createUser(req.body);
             res.status(201).json(createdUser);
         } catch (error: any) {
             console.log("errrrr")
             next(error);
-            // res.status(500).json({ message: error.message });
         }
     };
-    // Handler to respond to a request to update a user by ID
-    updateUser = async (req: Request, res: Response) => {
-        console.log("updateeeeee")
+
+    updateUser = async (req: Request, res: Response, next: NextFunction) => {
+        console.log("Update User API")
         try {
             const userId = req.params.id;
             const userData = req.body;
             const updatedUser = await this.userService.updateUser(userId, userData);
             res.status(200).send(updatedUser);
         } catch (error: any) {
-            res.status(500).send({ message: error.message });
+            next(error);
         }
     };
 
-    // Add other handlers as needed for your application...
 }

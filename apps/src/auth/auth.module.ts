@@ -1,4 +1,3 @@
-
 import { Router } from 'express';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
@@ -17,6 +16,8 @@ export class AuthModule {
 
     private routes() {
         this.router.get('/', this.authController.getToken);
-        // ...other user routes
+        this.router.get('/getTokenInfo', this.authController.getTokenInfo);
+        this.router.post('/login', this.authController.login);
+        this.router.post('/register', this.authController.register);
     }
 }

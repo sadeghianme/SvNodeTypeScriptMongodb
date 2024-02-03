@@ -2,6 +2,7 @@
 
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
+// @ts-ignore
 import request from 'supertest';
 import app from '../src/app'; // Adjust the import path as per your project structure
 

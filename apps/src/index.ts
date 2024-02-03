@@ -1,11 +1,14 @@
 
+import * as dotenv from 'dotenv';
+dotenv.config();
+console.log(".env variables Loaded Successfully");
+
 import app from './app';
-import dotenv from 'dotenv';
 import connectDB from '../config/mongoose.config';
 import {initializeModels} from "./initializeModels";
 
-//For env File
-dotenv.config();
+
+
 
 const PORT = process.env.PORT || 8000;
 

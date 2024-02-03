@@ -1,10 +1,8 @@
-//user.model.ts
-
 import mongoose, { Document } from 'mongoose';
 import { CreateUserDto } from '../dto/user.dto';
 
 // Extending CreateUserDto with Document for Mongoose
-interface UserDocument extends CreateUserDto, Document {}
+export interface UserDocument extends CreateUserDto, Document {}
 
 const userSchema = new mongoose.Schema<UserDocument>({
     username: { type: String, required: true, unique: true },

@@ -5,20 +5,19 @@ import { LogManagementService } from './logManagement.service';
 
 export class LogManagementModule {
     public router: Router;
-    private userController: LogManagementController;
-    private userService: LogManagementService;
+    private logManagementController: LogManagementController;
+    private logManagementService: LogManagementService;
 
     constructor() {
-        this.userService = new LogManagementService();
-        this.userController = new LogManagementController(this.userService);
+        this.logManagementService = new LogManagementService();
+        this.logManagementController = new LogManagementController(this.logManagementService);
         this.router = Router();
         this.routes();
     }
 
     private routes() {
-        this.router.get('/:id', this.userController.getUserById);
-        this.router.post('/create', this.userController.createUser);
-        this.router.put('/update', this.userController.updateUser);
+        this.router.get('/:id', this.logManagementController.getLogs);
+        this.router.put('/logs', this.logManagementController.getLogById);
         // ...other user routes
     }
 }

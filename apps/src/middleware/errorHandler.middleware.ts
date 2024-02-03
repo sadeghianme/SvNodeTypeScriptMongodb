@@ -1,5 +1,3 @@
-// src/middleware/errorHandler.middleware.ts
-
 import { Request, Response, NextFunction } from 'express';
 import { LogManagementService } from '../log-management/logManagement.service';
 
@@ -13,7 +11,7 @@ export const errorHandler = async (err: any, req: Request, res: Response, next: 
     };
 
     // Log the error in the database
-    await logService.logError(errorDetails);
+    await logService.createLogError(errorDetails);
 
     // Respond to the client
     res.status(err.status || 500).json({
